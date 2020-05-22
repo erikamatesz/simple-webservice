@@ -7,7 +7,9 @@ public interface IBank {
 
     void deposit(Double amount, IClient client, AccountType type);
 
-    public Double withdraw(Double amount, IClient client, AccountType type);
+    Double withdraw(Double amount, IClient client, AccountType type);
+
+    void transfer(Double amount, IClient sender, AccountType senderType, IClient recipient, AccountType recipientType);
 
     String showAllBalances();
 

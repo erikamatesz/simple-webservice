@@ -9,6 +9,7 @@ class Transaction {
 
     private Double amount;
     private Date timestamp;
+    private String description;
 
     public Double getAmount() {
         return this.amount;
@@ -18,9 +19,12 @@ class Transaction {
         return this.timestamp;
     }
 
-    Transaction(Double amount, Date timestamp) {
+    public String getDescription() { return this.description; }
+
+    Transaction(Double amount, Date timestamp, String description) {
         this.amount = amount;
         this.timestamp = timestamp;
+        this.description = description;
     }
 
     static Double getBalance(List<Transaction> transactions) {
@@ -39,20 +43,20 @@ class Account {
 
     protected List<Transaction> transactions;
 
-    protected Double addTransaction(Double amount) {
+    protected Double addTransaction(Double amount, String description) {
 
-        Transaction transaction = new Transaction(amount, new Date());
+        Transaction transaction = new Transaction(amount, new Date(), description);
         transactions.add(transaction);
         return amount;
     
     }
 
     public void deposit(Double amount) {
-        this.addTransaction(amount);
+        this.addTransaction(amount, "Deposit");
     }
 
     public Double withdraw(Double amount) {
-        return this.addTransaction(-amount);
+        return this.addTransaction(-amount, "Withdraw");
     }
 
     public void transfer(Double amount, Account recipientAccount) {
@@ -222,7 +226,16 @@ public class Bank implements IBank {
 
         Account senderAccount = this.getClientAccount(senderType, sender);
         Account recipientAccount = this.getClientAccount(recipientType, recipient);
-        senderAccount.transfer(amount, recipientAccount);
+
+        try {
+
+            senderAccount.transfer(amount, recipientAccount);
+
+        } catch (java.lang.NullPointerException e) {
+
+            System.out.println(sender.getId() + ", an error occurred!");
+
+        }
 
     }
 

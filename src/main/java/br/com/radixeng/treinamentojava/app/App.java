@@ -9,7 +9,7 @@ public class App {
 
     public static void main(String[] args) {
 
-        URI uri = UriBuilder.fromUri("http://localhost/").port(8080).build();
+        URI uri = UriBuilder.fromUri("http://localhost/").port(8181).build();
         ResourceConfig config = new ResourceConfig(Service.class);
         Server server = JettyHttpContainerFactory.createServer(uri, config);
     

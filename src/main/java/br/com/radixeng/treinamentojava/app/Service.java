@@ -13,6 +13,12 @@ class Operation {
     public String accountType;
 }
 
+class TransferOperation {
+    public Double amount;
+    public String senderAccountType;
+    public String recipientAccountType;
+}
+
 class AccountResponse {
     public AccountType type;
     public Double balance;
@@ -27,10 +33,13 @@ public class Service {
 
     static private IBank bank = Bank.getBank();
 
-    /**
-     * create an account for an existing client
-     * @return String
-     */
+    @GET
+    @Path("/")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String hello() {
+        return "Welcome to your online bank!";
+    }
+
     @POST
     @Path("/account")
     @Produces(MediaType.APPLICATION_JSON)
@@ -46,16 +55,12 @@ public class Service {
         Boolean created = Service.bank.createAccount(client, AccountType.valueOf(newAccount.accountType));
 
         if (created) {
-            return "Account created.";
+            return "{\"message\": \"Account created.\"}";
         } else {
-            return "{\"error\": \"Sorry! The system wasn't able to create your account.\"";
+            return "{\"error\": \"Sorry! The system wasn't able to create your account.\"}";
         }
     }
 
-    /**
-     * deposit an amount to an account
-     * @return String
-     */
     @POST
     @Path("account/{client_id}/deposit")
     @Produces(MediaType.APPLICATION_JSON)
@@ -69,14 +74,10 @@ public class Service {
         };
 
         Service.bank.deposit(deposit.amount, recipient, AccountType.valueOf(deposit.accountType));
-        return "Deposit done.";
+        return "{\"message\": \"Deposit done.\"}";
 
     }
 
-    /**
-     * withdraw an amount from an account
-     * @return String
-     */
     @POST
     @Path("account/{client_id}/withdraw")
     @Produces(MediaType.APPLICATION_JSON)
@@ -90,8 +91,35 @@ public class Service {
         };
 
         Service.bank.withdraw(withdraw.amount, recipient, AccountType.valueOf(withdraw.accountType));
-        return "Withdraw done.";
+        return "{\"message\": \"Withdraw done.\"}";
 
+    }
+
+    // sender account type
+    // sender amount
+    // recipient account type
+
+    @POST
+    @Path("account/{from_id}/transfers/to/{to_id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String transfer(@PathParam("from_id") String sender, @PathParam("to_id") String recipient, TransferOperation transfer) {
+
+        IClient from = new IClient() {
+            @Override
+            public String getId() {
+                return sender;
+            }
+        };
+
+        IClient to = new IClient() {
+            @Override
+            public String getId() {
+                return recipient;
+            }
+        };
+
+       Service.bank.transfer(transfer.amount, from, AccountType.valueOf(transfer.senderAccountType), to, AccountType.valueOf(transfer.recipientAccountType));
+       return "{\"message\": \"Transfer done.\"}";
     }
 
     /**
@@ -125,5 +153,7 @@ public class Service {
         return response;
 
     }
+
+    // ver transacoes de um usuario
 
 }
