@@ -1,4 +1,5 @@
 package br.com.radixeng.treinamentojava.app;
+import java.util.List;
 import java.util.Map;
 
 public interface IBank {
@@ -14,5 +15,7 @@ public interface IBank {
     String showAllBalances();
 
     Map<AccountType, Account> getClientAccounts(IClient client);
+
+    List<Transaction> getClientTransactions(IClient client);
 
 }

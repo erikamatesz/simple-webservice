@@ -51,6 +51,12 @@ class Account {
     
     }
 
+    public List<Transaction> getTransactions() {
+
+        return transactions;
+
+    }
+
     public void deposit(Double amount) {
         this.addTransaction(amount, "Deposit");
     }
@@ -250,6 +256,30 @@ public class Bank implements IBank {
         Map<AccountType, Account> types = this.clientAccountMap.get(client.getId());
         Account account = types.get(type);
         return account;
+
+    }
+
+    public List<Transaction> getClientTransactions(IClient client) {
+
+        List<Transaction> transactions = new ArrayList<>();
+        Map<AccountType, Account> types = this.clientAccountMap.get(client.getId());
+
+        if (types.containsKey(AccountType.CHECKING)) {
+            Account checking = types.get(AccountType.CHECKING);
+            transactions.addAll(checking.transactions);
+        }
+
+        if (types.containsKey(AccountType.SAVINGS)) {
+            Account savings = types.get(AccountType.SAVINGS);
+            transactions.addAll(savings.transactions);
+        }
+
+        if (types.containsKey(AccountType.MONEY_MARKET)) {
+            Account moneyMarket = types.get(AccountType.MONEY_MARKET);
+            transactions.addAll(moneyMarket.transactions);
+        }
+
+        return transactions;
 
     }
 }

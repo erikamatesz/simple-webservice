@@ -28,6 +28,17 @@ class AccountListResponse {
     public List<AccountResponse> allAccounts = new ArrayList<>();
 }
 
+class TransactionResponse {
+    public Double amount;
+    public Date timestamp;
+    public String description;
+}
+
+class TransactionListResponse {
+    public List<TransactionResponse> allTransactions = new ArrayList<>();
+}
+
+
 @Path("/bank")
 public class Service {
 
@@ -95,10 +106,6 @@ public class Service {
 
     }
 
-    // sender account type
-    // sender amount
-    // recipient account type
-
     @POST
     @Path("account/{from_id}/transfers/to/{to_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -122,11 +129,6 @@ public class Service {
        return "{\"message\": \"Transfer done.\"}";
     }
 
-    /**
-     * get client account list
-     * @param client
-     * @return
-     */
     @GET
     @Path("account/{client_id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -154,6 +156,31 @@ public class Service {
 
     }
 
-    // ver transacoes de um usuario
+    @GET
+    @Path("account/{client_id}/transactions")
+    @Produces(MediaType.APPLICATION_JSON)
+    public TransactionListResponse getTransactions(@PathParam("client_id") final String client) {
+
+        IClient accountOwner = new IClient() {
+            @Override
+            public String getId() {
+                return client;
+            }
+        };
+
+        List<Transaction> response = Service.bank.getClientTransactions(accountOwner);
+
+        TransactionListResponse transactions = new TransactionListResponse();
+        for (Transaction transaction : response) {
+            TransactionResponse transactionResponse = new TransactionResponse();
+            transactionResponse.amount = transaction.getAmount();
+            transactionResponse.description = transaction.getDescription();
+            transactionResponse.timestamp = transaction.getTimestamp();
+            transactions.allTransactions.add(transactionResponse);
+        }
+
+        return transactions;
+
+    }
 
 }
